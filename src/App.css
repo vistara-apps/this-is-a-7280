@@ -1,0 +1,15 @@
+.glow-effect {
+  background: radial-gradient(circle at center, hsla(240, 80%, 50%, 0.3) 0%, transparent 50%);
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+}

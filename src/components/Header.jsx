@@ -1,38 +1,57 @@
-import React from 'react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Film, Settings, User } from 'lucide-react';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAppContext } from '../context/AppContext'
+import { Film, User, LogOut, Settings } from 'lucide-react'
 
-const Header = ({ currentView, onBackToHero, user }) => {
+const Header = () => {
+  const { user, logout } = useAppContext()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
   return (
-    <header className="sticky top-0 z-50 glass border-b border-gray-800">
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-surface-light">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div 
             className="flex items-center space-x-2 cursor-pointer"
-            onClick={onBackToHero}
+            onClick={() => navigate('/')}
           >
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <Film className="w-5 h-5 text-white" />
+            <div className="relative">
+              <Film className="w-8 h-8 text-primary" />
+              <div className="absolute inset-0 animate-pulse-glow"></div>
             </div>
-            <h1 className="text-xl font-bold">CineMatch AI</h1>
+            <span className="text-xl font-bold text-text-primary">CineMatch AI</span>
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center space-x-4">
-            {user && currentView === 'dashboard' && (
-              <div className="flex items-center space-x-2 text-sm text-dark-text-secondary">
-                <User className="w-4 h-4" />
-                <span>{user.email}</span>
-              </div>
-            )}
-            
-            <ConnectButton />
-          </div>
+          {user && (
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors duration-200"
+              >
+                <User className="w-5 h-5" />
+                <span className="hidden sm:inline">Profile</span>
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 text-text-secondary hover:text-red-400 transition-colors duration-200"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

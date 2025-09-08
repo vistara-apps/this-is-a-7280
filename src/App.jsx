@@ -1,68 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import OnboardingFlow from './components/OnboardingFlow';
-import Dashboard from './components/Dashboard';
-import { UserProvider } from './context/UserContext';
-import { RecommendationProvider } from './context/RecommendationContext';
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { useAppContext } from './context/AppContext'
+import Layout from './components/Layout'
+import Welcome from './pages/Welcome'
+import Onboarding from './pages/Onboarding'
+import Dashboard from './pages/Dashboard'
+import Profile from './pages/Profile'
+import './App.css'
 
 function App() {
-  const [currentView, setCurrentView] = useState('hero'); // hero, onboarding, dashboard
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Check if user has completed onboarding
-    const userData = localStorage.getItem('cinematch_user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-      setCurrentView('dashboard');
-    }
-  }, []);
-
-  const handleStartOnboarding = () => {
-    setCurrentView('onboarding');
-  };
-
-  const handleOnboardingComplete = (userData) => {
-    setUser(userData);
-    localStorage.setItem('cinematch_user', JSON.stringify(userData));
-    setCurrentView('dashboard');
-  };
-
-  const handleBackToHero = () => {
-    setCurrentView('hero');
-    setUser(null);
-    localStorage.removeItem('cinematch_user');
-  };
+  const { user } = useAppContext()
 
   return (
-    <UserProvider>
-      <RecommendationProvider>
-        <div className="min-h-screen bg-dark-bg text-dark-text-primary">
-          <Header 
-            currentView={currentView} 
-            onBackToHero={handleBackToHero}
-            user={user}
-          />
-          
-          <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {currentView === 'hero' && (
-              <Hero onStartOnboarding={handleStartOnboarding} />
-            )}
-            
-            {currentView === 'onboarding' && (
-              <OnboardingFlow onComplete={handleOnboardingComplete} />
-            )}
-            
-            {currentView === 'dashboard' && user && (
-              <Dashboard user={user} />
-            )}
-          </main>
-        </div>
-      </RecommendationProvider>
-    </UserProvider>
-  );
+    <div className="min-h-screen bg-background">
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          {!user ? (
+            <>
+              <Route index element={<Welcome />} />
+              <Route path="onboarding" element={<Onboarding />} />
+            </>
+          ) : (
+            <>
+              <Route index element={<Dashboard />} />
+              <Route path="profile" element={<Profile />} />
+            </>
+          )}
+        </Route>
+      </Routes>
+    </div>
+  )
 }
 
-export default App;
+export default App

@@ -1,145 +1,156 @@
-import React, { useState } from 'react';
-import { Heart, X, Bookmark, Star, Clock, Calendar, Play } from 'lucide-react';
+import React, { useState } from 'react'
+import { Heart, Clock, Star, Play, BookmarkPlus, Bookmark } from 'lucide-react'
 
-const RecommendationCard = ({ item, isPremium, onLike, onDislike, onSave }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+const RecommendationCard = ({ item, index }) => {
+  const [liked, setLiked] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    onLike(item);
-  };
+  const handleLike = (e) => {
+    e.stopPropagation()
+    setLiked(!liked)
+  }
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-    onSave(item);
-  };
+  const handleSave = (e) => {
+    e.stopPropagation()
+    setSaved(!saved)
+  }
 
   return (
-    <div className="card overflow-hidden group hover:scale-105 transition-transform duration-200">
-      {/* Poster */}
-      <div className="relative aspect-[2/3] bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
-        {item.posterUrl ? (
-          <img 
-            src={item.posterUrl} 
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Play className="w-16 h-16 text-gray-600" />
-          </div>
-        )}
+    <div 
+      className="card group hover:scale-105 hover:shadow-glow transition-all duration-300 cursor-pointer animate-slide-up"
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      {/* Poster Image */}
+      <div className="relative mb-4 overflow-hidden rounded-lg">
+        <img
+          src={item.poster}
+          alt={item.title}
+          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+        />
         
-        {/* Overlay Actions */}
+        {/* Match Score Badge */}
+        <div className="absolute top-2 left-2 bg-black/80 text-white px-2 py-1 rounded-full text-xs font-medium">
+          {item.matchScore}% match
+        </div>
+        
+        {/* Action Buttons */}
         <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={handleLike}
-            className={`p-2 rounded-full backdrop-blur-md ${
-              isLiked ? 'bg-red-500 text-white' : 'bg-black/50 text-white hover:bg-red-500'
-            } transition-colors duration-200`}
+            className={`p-2 rounded-full backdrop-blur-sm transition-colors duration-200 ${
+              liked 
+                ? 'bg-red-500 text-white' 
+                : 'bg-black/50 text-white hover:bg-red-500'
+            }`}
           >
-            <Heart className="w-4 h-4" fill={isLiked ? 'currentColor' : 'none'} />
+            <Heart className="w-4 h-4" fill={liked ? 'currentColor' : 'none'} />
           </button>
+          
           <button
             onClick={handleSave}
-            className={`p-2 rounded-full backdrop-blur-md ${
-              isSaved ? 'bg-blue-500 text-white' : 'bg-black/50 text-white hover:bg-blue-500'
-            } transition-colors duration-200`}
+            className={`p-2 rounded-full backdrop-blur-sm transition-colors duration-200 ${
+              saved 
+                ? 'bg-primary text-white' 
+                : 'bg-black/50 text-white hover:bg-primary'
+            }`}
           >
-            <Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} />
+            {saved ? <Bookmark className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
           </button>
         </div>
 
-        {/* Rating Badge */}
-        {item.rating && (
-          <div className="absolute top-2 left-2 flex items-center space-x-1 bg-black/70 text-yellow-400 px-2 py-1 rounded-full text-sm">
-            <Star className="w-3 h-3" fill="currentColor" />
-            <span>{item.rating}</span>
-          </div>
-        )}
-
-        {/* Premium Badge */}
-        {isPremium && item.isPremiumRecommendation && (
-          <div className="absolute bottom-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-            Premium Pick
-          </div>
-        )}
+        {/* Play Button Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/20">
+          <button className="bg-white/90 hover:bg-white text-black p-3 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-200">
+            <Play className="w-6 h-6 ml-1" />
+          </button>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.title}</h3>
-        
-        {/* Metadata */}
-        <div className="flex items-center space-x-4 text-sm text-dark-text-secondary mb-3">
-          {item.year && (
+      <div className="space-y-3">
+        {/* Title and Type */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-lg font-semibold text-text-primary line-clamp-1">
+              {item.title}
+            </h3>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              item.type === 'movie' 
+                ? 'bg-primary/20 text-primary' 
+                : 'bg-accent/20 text-accent'
+            }`}>
+              {item.type === 'movie' ? 'Movie' : 'Series'}
+            </span>
+          </div>
+          
+          {/* Rating and Duration */}
+          <div className="flex items-center space-x-4 text-sm text-text-secondary">
             <div className="flex items-center space-x-1">
-              <Calendar className="w-3 h-3" />
-              <span>{item.year}</span>
+              <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+              <span>{item.rating}</span>
             </div>
-          )}
-          {item.duration && (
             <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
+              <Clock className="w-4 h-4" />
               <span>{item.duration}</span>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Genres */}
-        {item.genres && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {item.genres.slice(0, 3).map((genre, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-gray-800 text-xs rounded-full"
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
-        )}
-
         {/* Description */}
-        <p className="text-sm text-dark-text-secondary line-clamp-3 mb-4">
+        <p className="text-text-secondary text-sm line-clamp-3">
           {item.description}
         </p>
 
-        {/* AI Match Score */}
-        {item.matchScore && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-dark-text-secondary">AI Match:</span>
-              <div className="flex items-center space-x-1">
-                <div className="w-16 bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-primary to-accent h-2 rounded-full"
-                    style={{ width: `${item.matchScore}%` }}
-                  />
-                </div>
-                <span className="text-sm font-medium text-primary">{item.matchScore}%</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Genres */}
+        <div className="flex flex-wrap gap-1">
+          {item.genre.slice(0, 3).map((genre) => (
+            <span
+              key={genre}
+              className="px-2 py-1 bg-surface-light text-text-secondary text-xs rounded-full"
+            >
+              {genre}
+            </span>
+          ))}
+          {item.genre.length > 3 && (
+            <span className="px-2 py-1 bg-surface-light text-text-secondary text-xs rounded-full">
+              +{item.genre.length - 3} more
+            </span>
+          )}
+        </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2 mt-4">
-          <button
-            onClick={onDislike}
-            className="flex-1 flex items-center justify-center space-x-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors duration-200"
-          >
-            <X className="w-4 h-4" />
-            <span className="text-sm">Not Interested</span>
-          </button>
-          <button className="flex-1 btn-primary text-sm">
-            View Details
-          </button>
+        {/* Mood Tags */}
+        <div className="flex flex-wrap gap-1">
+          {item.mood.map((mood) => (
+            <span
+              key={mood}
+              className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full border border-accent/20"
+            >
+              {mood}
+            </span>
+          ))}
+        </div>
+
+        {/* Platforms */}
+        <div className="flex items-center justify-between pt-2 border-t border-surface-light">
+          <div className="flex flex-wrap gap-1">
+            {item.platforms.slice(0, 2).map((platform) => (
+              <span
+                key={platform}
+                className="text-xs text-text-secondary bg-surface-light px-2 py-1 rounded"
+              >
+                {platform}
+              </span>
+            ))}
+            {item.platforms.length > 2 && (
+              <span className="text-xs text-text-secondary">
+                +{item.platforms.length - 2} more
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RecommendationCard;
+export default RecommendationCard
