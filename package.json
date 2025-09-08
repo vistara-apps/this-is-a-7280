@@ -13,7 +13,12 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "lucide-react": "^0.263.1",
-    "openai": "^4.28.0"
+    "openai": "^4.28.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "@stripe/stripe-js": "^2.4.0",
+    "@stripe/react-stripe-js": "^2.4.0",
+    "react-hot-toast": "^2.4.1",
+    "date-fns": "^3.0.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

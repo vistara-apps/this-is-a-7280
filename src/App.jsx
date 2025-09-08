@@ -6,6 +6,7 @@ import Welcome from './pages/Welcome'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import Subscription from './pages/Subscription'
 import './App.css'
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <>
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="subscription" element={<Subscription />} />
             </>
           )}
         </Route>
